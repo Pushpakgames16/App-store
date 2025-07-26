@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Browser</title>
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00ffff;
+            --neon-pink: #ff00ff;
+            --neon-green: #39ff14;
+            --dark-bg: #0d0221;
+            --light-bg: #261447;
+            --text-color: #f0f0f0;
+            --gold: #FFD700;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Russo One', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--light-bg) 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(13, 2, 33, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-bottom: 2px solid var(--neon-blue);
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        h1 {
+            color: var(--neon-blue);
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 2px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 0.5rem 1rem;
+            font-family: 'Russo One', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--neon-green);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        .search-container {
+            position: relative;
+            min-width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 2px solid var(--neon-pink);
+            color: var(--text-color);
+            font-family: 'Russo One', sans-serif;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        /* Main Content */
+        main {
+            padding: 2rem;
+        }
+
+        #content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .item-card {
+            background: rgba(38, 20, 71, 0.8);
+            border: 2px solid var(--neon-blue);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px var(--neon-blue);
+        }
+
+        .item-logo {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .item-title {
+            color: var(--neon-green);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-type {
+            color: var(--neon-pink);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .stars {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .star {
+            color: var(--gold);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .rating-info {
+            color: var(--text-color);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .play-btn {
+            background: transparent;
+            border: 2px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 0.5rem 1rem;
+            font-family: 'Russo One', sans-serif;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .play-btn:hover {
+            background: var(--neon-green);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        /* Modal Styles */
+        #play-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--light-bg);
+            border: 2px solid var(--neon-blue);
+            border-radius: 10px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .modal-title {
+            color: var(--neon-green);
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: 2px solid var(--neon-pink);
+            color: var(--neon-pink);
+            padding: 0.5rem 1rem;
+            font-family: 'Russo One', sans-serif;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: var(--neon-pink);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        .modal-iframe {
+            width: 100%;
+            height: 500px;
+            border: 2px solid var(--neon-blue);
+            border-radius: 8px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .search-container {
+                min-width: 100%;
+            }
+
+            #content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Content Browser</h1>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="games">Games</button>
+                <button class="filter-btn" data-filter="apps">Apps</button>
+            </div>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search content..." id="search-input">
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div id="content-grid">
+            <!-- Content cards will be dynamically generated here -->
+        </div>
+    </main>
+
+    <div id="play-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">Content Title</h2>
+                <button class="close-btn" id="close-modal">×</button>
+            </div>
+            <iframe class="modal-iframe" id="modal-iframe" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // ======================================================================
+            // ======================================================================
+            // 🔥🔥 PASTE YOUR FIREBASE WEB SDK CONFIG SNIPPET HERE 🔥🔥
+            //
+            // const firebaseConfig = {
+            //   apiKey: "AIza...",
+            //   authDomain: "...",
+            //   databaseURL: "...",
+            //   projectId: "...",
+            //   storageBucket: "...",
+            //   messagingSenderId: "...",
+            //   appId: "..."
+            // };
+            // ======================================================================
+            // ======================================================================
+
+            // --- STEP 1: Initialize Firebase ---
+            // TODO: Uncomment the lines below after pasting your config.
+            // firebase.initializeApp(firebaseConfig);
+            // const db = firebase.database();
+
+            // DOM Element variables (these are complete)
+            const contentGrid = document.getElementById('content-grid');
+            const searchInput = document.getElementById('search-input');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const playModal = document.getElementById('play-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalIframe = document.getElementById('modal-iframe');
+            const closeModal = document.getElementById('close-modal');
+
+            let allItems = []; // To hold data from Firebase
+            let currentFilter = 'all';
+            let currentSearch = '';
+
+            // --- STEP 2: Fetch Data from Firebase ---
+            // TODO: Implement the Firebase listener to fetch all items from the 'items' node.
+            // db.ref('items').on('value', (snapshot) => {
+            //     1. Check if snapshot.val() exists.
+            //     2. Process the data into the 'allItems' array.
+            //     3. Call renderContent() to update the UI.
+            // });
+
+            function renderContent() {
+                // This function is complete. It filters and renders cards from the 'allItems' array.
+                let filteredItems = allItems;
+
+                // Apply filter
+                if (currentFilter !== 'all') {
+                    filteredItems = filteredItems.filter(item => item.type === currentFilter);
+                }
+
+                // Apply search
+                if (currentSearch) {
+                    filteredItems = filteredItems.filter(item => 
+                        item.title.toLowerCase().includes(currentSearch.toLowerCase())
+                    );
+                }
+
+                contentGrid.innerHTML = filteredItems.map(item => `
+                    <div class="item-card" data-id="${item.id}">
+                        <img src="${item.logoUrl}" alt="${item.title}" class="item-logo">
+                        <h3 class="item-title">${item.title}</h3>
+                        <p class="item-type">${item.type}</p>
+                        <div class="stars" data-id="${item.id}">
+                            ${generateStars(item.avgRating || 0)}
+                        </div>
+                        <div class="rating-info">
+                            Average: ${(item.avgRating || 0).toFixed(1)} (${item.totalRatings || 0} ratings)
+                        </div>
+                        <button class="play-btn" onclick="openModal('${item.id}')">Play</button>
+                    </div>
+                `).join('');
+
+                // Re-attach star click listeners
+                document.querySelectorAll('.star').forEach(star => {
+                    star.addEventListener('click', handleRatingClick);
+                });
+            }
+
+            function generateStars(rating) {
+                const fullStars = Math.floor(rating);
+                const hasHalfStar = rating % 1 >= 0.5;
+                let stars = '';
+                
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= fullStars) {
+                        stars += '<span class="star" data-value="' + i + '">★</span>';
+                    } else if (i === fullStars + 1 && hasHalfStar) {
+                        stars += '<span class="star" data-value="' + i + '">☆</span>';
+                    } else {
+                        stars += '<span class="star" data-value="' + i + '">☆</span>';
+                    }
+                }
+                return stars;
+            }
+
+            function handleRatingClick(e) {
+                const itemId = e.target.closest('.stars').dataset.id;
+                const rating = e.target.dataset.value;
+
+                if (localStorage.getItem(`rated_${itemId}`)) {
+                    alert("You've already rated this!");
+                    return;
+                }
+
+                // --- STEP 3: Update Rating in Firebase ---
+                // TODO: Implement the Firebase transaction to atomically update the item's rating.
+                // const itemRef = db.ref('items/' + itemId);
+                // itemRef.transaction((currentItemData) => {
+                //   if (currentItemData) {
+                //      ... logic to update totalRatings, sumOfRatings, and avgRating ...
+                //   }
+                //   return currentItemData;
+                // });
+
+                localStorage.setItem(`rated_${itemId}`, rating);
+                
+                // Update UI immediately for better UX
+                const item = allItems.find(item => item.id === itemId);
+                if (item) {
+                    item.totalRatings = (item.totalRatings || 0) + 1;
+                    item.sumOfRatings = (item.sumOfRatings || 0) + parseInt(rating);
+                    item.avgRating = item.sumOfRatings / item.totalRatings;
+                    renderContent();
+                }
+            }
+
+            // Filter button event listeners
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    renderContent();
+                });
+            });
+
+            // Search input event listener
+            searchInput.addEventListener('input', (e) => {
+                currentSearch = e.target.value;
+                renderContent();
+            });
+
+            // Modal event listeners
+            closeModal.addEventListener('click', () => {
+                playModal.style.display = 'none';
+            });
+
+            window.openModal = (itemId) => {
+                const item = allItems.find(item => item.id === itemId);
+                if (item) {
+                    modalTitle.textContent = item.title;
+                    modalIframe.src = item.htmlCode;
+                    playModal.style.display = 'block';
+                }
+            };
+
+            // Close modal when clicking outside
+            playModal.addEventListener('click', (e) => {
+                if (e.target === playModal) {
+                    playModal.style.display = 'none';
+                }
+            });
+
+            // Initial render with sample data (remove this when Firebase is connected)
+            allItems = [
+                {
+                    id: '1',
+                    title: 'Sample Game',
+                    type: 'games',
+                    logoUrl: 'https://via.placeholder.com/300x150/00ffff/000000?text=Game+Logo',
+                    htmlCode: 'https://example.com/game1',
+                    avgRating: 4.2,
+                    totalRatings: 15,
+                    sumOfRatings: 63
+                },
+                {
+                    id: '2',
+                    title: 'Sample App',
+                    type: 'apps',
+                    logoUrl: 'https://via.placeholder.com/300x150/ff00ff/000000?text=App+Logo',
+                    htmlCode: 'https://example.com/app1',
+                    avgRating: 3.8,
+                    totalRatings: 8,
+                    sumOfRatings: 30
+                }
+            ];
+            renderContent();
+        });
+    </script>
+</body>
+</html>
