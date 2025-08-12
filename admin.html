@@ -1,569 +1,437 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --neon-blue: #00ffff;
-            --neon-pink: #ff00ff;
-            --neon-green: #39ff14;
-            --dark-bg: #0d0221;
-            --light-bg: #261447;
-            --text-color: #f0f0f0;
-            --gold: #FFD700;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --neon-blue: #00ffff;
+      --neon-pink: #ff00ff;
+      --neon-green: #39ff14;
+      --dark-bg: #0d0221;
+      --light-bg: #261447;
+      --text-color: #f0f0f0;
+      --gold: #FFD700;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
 
-        body {
-            font-family: 'Russo One', sans-serif;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--light-bg) 100%);
-            color: var(--text-color);
-            min-height: 100vh;
-        }
+    body {
+      margin: 0;
+      font-family: 'Russo One', sans-serif;
+      background: radial-gradient(1000px 500px at 10% -20%, rgba(57,255,20,0.08), transparent),
+                  radial-gradient(800px 400px at 110% 10%, rgba(0,255,255,0.08), transparent),
+                  linear-gradient(180deg, #0d0221 0%, #120631 100%);
+      color: var(--text-color);
+    }
 
-        /* Container Styles */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
+    /* Headings: solid neon color, NO text-shadow */
+    h1, h2 { color: var(--neon-blue); margin: 0 0 12px 0; letter-spacing: 0.5px; }
 
-        /* Login Container */
-        #login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+    /* Sticky header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(13, 2, 33, 0.85);
+      backdrop-filter: blur(6px);
+      border-bottom: 2px solid var(--neon-pink);
+      box-shadow: 0 0 12px rgba(255, 0, 255, 0.35);
+    }
 
-        .login-form {
-            background: rgba(38, 20, 71, 0.9);
-            border: 2px solid var(--neon-blue);
-            border-radius: 15px;
-            padding: 3rem;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 0 30px var(--neon-blue);
-        }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      flex-wrap: wrap;
+    }
 
-        .login-title {
-            color: var(--neon-green);
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 2rem;
-        }
+    .brand { color: var(--neon-green); font-size: 20px; margin-right: auto; }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+    /* Buttons - neon theme */
+    .btn {
+      appearance: none;
+      border: 2px solid var(--neon-blue);
+      color: var(--text-color);
+      background: transparent;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      box-shadow: 0 0 8px rgba(0, 255, 255, 0.35), inset 0 0 8px rgba(0, 255, 255, 0.2);
+    }
+    .btn:hover { box-shadow: 0 0 12px rgba(0,255,255,0.6), inset 0 0 12px rgba(0,255,255,0.35); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn.active { border-color: var(--neon-pink); box-shadow: 0 0 12px rgba(255,0,255,0.6), inset 0 0 12px rgba(255,0,255,0.35); }
 
-        .form-label {
-            display: block;
-            color: var(--neon-pink);
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-        }
+    .btn-pink { border-color: var(--neon-pink); box-shadow: 0 0 8px rgba(255, 0, 255, 0.35), inset 0 0 8px rgba(255,0,255,0.2); }
+    .btn-green { border-color: var(--neon-green); box-shadow: 0 0 8px rgba(57,255,20,0.35), inset 0 0 8px rgba(57,255,20,0.2); }
 
-        .form-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: transparent;
-            border: 2px solid var(--neon-green);
-            color: var(--text-color);
-            font-family: 'Russo One', sans-serif;
-            border-radius: 5px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
+    /* Inputs - neon theme */
+    .input, .textarea, .select {
+      width: 100%;
+      border: 2px solid var(--neon-green);
+      background: rgba(38, 20, 71, 0.5);
+      color: var(--text-color);
+      padding: 10px 12px;
+      border-radius: 10px;
+      outline: none;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+      box-shadow: 0 0 8px rgba(57, 255, 20, 0.35), inset 0 0 8px rgba(57, 255, 20, 0.2);
+    }
+    .input::placeholder, .textarea::placeholder { color: #bfbfbf; }
+    .input:focus, .textarea:focus, .select:focus { border-color: var(--neon-blue); box-shadow: 0 0 12px rgba(0,255,255,0.6), inset 0 0 12px rgba(0,255,255,0.35); }
 
-        .form-input:focus {
-            box-shadow: 0 0 20px var(--neon-green);
-        }
+    /* Layout helpers used across pages */
+    .container { max-width: 1200px; margin: 24px auto; padding: 0 16px 40px; }
 
-        .login-btn {
-            width: 100%;
-            background: transparent;
-            border: 2px solid var(--neon-green);
-            color: var(--neon-green);
-            padding: 1rem;
-            font-family: 'Russo One', sans-serif;
-            font-size: 1.1rem;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-        }
+    /* Main grid for user content */
+    main#content-grid {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 16px 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
 
-        .login-btn:hover {
-            background: var(--neon-green);
-            color: var(--dark-bg);
-            box-shadow: 0 0 20px var(--neon-green);
-        }
+    /* Cards */
+    .card {
+      background: rgba(38, 20, 71, 0.7);
+      border: 2px solid var(--neon-blue);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 14px rgba(0,255,255,0.2);
+      padding: 0;
+    }
+    .card-header { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 2px solid rgba(0,255,255,0.25); }
+    .card-logo { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 2px solid var(--neon-pink); box-shadow: 0 0 10px rgba(255,0,255,0.35); background: #000; }
+    .card-title { margin: 0; font-size: 18px; color: var(--neon-blue); }
+    .badge { margin-left: auto; font-size: 12px; padding: 4px 8px; border-radius: 999px; border: 2px solid var(--neon-green); color: var(--neon-green); }
 
-        /* Admin Panel */
-        #admin-panel {
-            display: none;
-        }
+    .card-body { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
 
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--neon-blue);
-        }
+    /* Stars */
+    .stars { display: inline-flex; gap: 6px; align-items: center; }
+    .star { cursor: pointer; font-size: 20px; color: #777; transition: transform 0.05s ease, text-shadow 0.2s ease, color 0.2s ease; }
+    .star:hover { transform: scale(1.08); }
+    .star.active { color: var(--gold); text-shadow: 0 0 10px rgba(255,215,0,0.45); }
 
-        .admin-title {
-            color: var(--neon-blue);
-            font-size: 2.5rem;
-        }
+    .card-actions { display: flex; gap: 10px; }
+    .btn-play { border-color: var(--neon-green); }
+    .btn-open { border-color: var(--neon-pink); }
 
-        .logout-btn {
-            background: transparent;
-            border: 2px solid var(--neon-pink);
-            color: var(--neon-pink);
-            padding: 0.75rem 1.5rem;
-            font-family: 'Russo One', sans-serif;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-        }
+    /* Modal */
+    .modal-backdrop {
+      position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 100;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      width: min(1000px, 92vw);
+      height: min(700px, 80vh);
+      background: var(--light-bg);
+      border: 2px solid var(--neon-pink);
+      border-radius: 14px;
+      box-shadow: 0 0 18px rgba(255,0,255,0.4);
+      display: flex; flex-direction: column;
+    }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 2px solid rgba(255,0,255,0.25); }
+    .modal-title { color: var(--neon-blue); font-size: 18px; margin: 0; }
+    .modal-close { border-color: var(--neon-pink); }
+    .modal-body { flex: 1; }
+    .modal-iframe { width: 100%; height: 100%; border: 0; background: #000; }
 
-        .logout-btn:hover {
-            background: var(--neon-pink);
-            color: var(--dark-bg);
-            box-shadow: 0 0 20px var(--neon-pink);
-        }
+    /* Admin layout helpers also available here for consistency */
+    .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 900px) { .grid-2 { grid-template-columns: 1fr 1fr; } .grid-3 { grid-template-columns: 2fr 1fr 1fr; } }
+    .row { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 700px) { .row-2 { grid-template-columns: 1fr 1fr; } }
 
-        /* Form Styles */
-        .item-form {
-            background: rgba(38, 20, 71, 0.8);
-            border: 2px solid var(--neon-green);
-            border-radius: 10px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
+    .list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .list-item { padding: 12px; border: 2px solid var(--neon-pink); border-radius: 12px; background: rgba(38,20,71,0.55); display: flex; flex-direction: column; gap: 8px; }
 
-        .form-title {
-            color: var(--neon-green);
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
+    label { font-size: 12px; color: var(--neon-blue); }
 
-        .form-row.full {
-            grid-template-columns: 1fr;
-        }
-
-        .form-textarea {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: transparent;
-            border: 2px solid var(--neon-pink);
-            color: var(--text-color);
-            font-family: 'Russo One', sans-serif;
-            border-radius: 5px;
-            outline: none;
-            resize: vertical;
-            min-height: 100px;
-            transition: all 0.3s ease;
-        }
-
-        .form-textarea:focus {
-            box-shadow: 0 0 20px var(--neon-pink);
-        }
-
-        .form-select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: transparent;
-            border: 2px solid var(--neon-blue);
-            color: var(--text-color);
-            font-family: 'Russo One', sans-serif;
-            border-radius: 5px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .form-select:focus {
-            box-shadow: 0 0 20px var(--neon-blue);
-        }
-
-        .form-select option {
-            background: var(--dark-bg);
-            color: var(--text-color);
-        }
-
-        .submit-btn {
-            background: transparent;
-            border: 2px solid var(--neon-green);
-            color: var(--neon-green);
-            padding: 0.75rem 2rem;
-            font-family: 'Russo One', sans-serif;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-        }
-
-        .submit-btn:hover {
-            background: var(--neon-green);
-            color: var(--dark-bg);
-            box-shadow: 0 0 20px var(--neon-green);
-        }
-
-        /* Items List */
-        .items-list {
-            background: rgba(38, 20, 71, 0.8);
-            border: 2px solid var(--neon-blue);
-            border-radius: 10px;
-            padding: 2rem;
-        }
-
-        .list-title {
-            color: var(--neon-blue);
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .item-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr auto;
-            gap: 1rem;
-            align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .item-row:hover {
-            background: rgba(0, 255, 255, 0.1);
-        }
-
-        .item-row:last-child {
-            border-bottom: none;
-        }
-
-        .item-header {
-            font-weight: bold;
-            color: var(--neon-pink);
-            padding: 1rem;
-            border-bottom: 2px solid var(--neon-pink);
-        }
-
-        .item-cell {
-            color: var(--text-color);
-        }
-
-        .action-btn {
-            background: transparent;
-            border: 2px solid var(--neon-green);
-            color: var(--neon-green);
-            padding: 0.5rem 1rem;
-            font-family: 'Russo One', sans-serif;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            margin-right: 0.5rem;
-        }
-
-        .action-btn:hover {
-            background: var(--neon-green);
-            color: var(--dark-bg);
-            box-shadow: 0 0 20px var(--neon-green);
-        }
-
-        .delete-btn {
-            border-color: var(--neon-pink);
-            color: var(--neon-pink);
-        }
-
-        .delete-btn:hover {
-            background: var(--neon-pink);
-            color: var(--dark-bg);
-            box-shadow: 0 0 20px var(--neon-pink);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .item-row {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
-            }
-
-            .item-header {
-                display: none;
-            }
-
-            .admin-header {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-        }
-    </style>
+    /* Utility */
+    .hidden { display: none !important; }
+    .controls { display: flex; align-items: center; gap: 10px; }
+  </style>
 </head>
 <body>
-    <!-- Login Container -->
-    <div id="login-container">
-        <form class="login-form" id="login-form">
-            <h1 class="login-title">Admin Login</h1>
-            <div class="form-group">
-                <label class="form-label" for="email">Email</label>
-                <input type="email" class="form-input" id="email" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label" for="password">Password</label>
-                <input type="password" class="form-input" id="password" required>
-            </div>
-            <button type="submit" class="login-btn">Login</button>
-        </form>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">NEON HUB — Admin</div>
+      <button id="logout-btn" class="btn btn-pink">Logout</button>
     </div>
 
-    <!-- Admin Panel -->
-    <div id="admin-panel">
-        <div class="container">
-            <div class="admin-header">
-                <h1 class="admin-title">Admin Dashboard</h1>
-                <button class="logout-btn" id="logout-btn">Logout</button>
-            </div>
-
-            <!-- Add/Edit Form -->
-            <form class="item-form" id="item-form">
-                <h2 class="form-title">Add/Edit Item</h2>
-                <input type="hidden" id="item-id">
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="title">Title</label>
-                        <input type="text" class="form-input" id="title" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="type">Type</label>
-                        <select class="form-select" id="type" required>
-                            <option value="">Select Type</option>
-                            <option value="games">Games</option>
-                            <option value="apps">Apps</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="logo-url">Logo URL</label>
-                        <input type="url" class="form-input" id="logo-url" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="html-code">HTML Code URL</label>
-                        <input type="url" class="form-input" id="html-code" required>
-                    </div>
-                </div>
-
-                <button type="submit" class="submit-btn">Save Item</button>
-            </form>
-
-            <!-- Items List -->
-            <div class="items-list">
-                <h2 class="list-title">Manage Items</h2>
-                <div class="item-row item-header">
-                    <div>Title</div>
-                    <div>Type</div>
-                    <div>Rating</div>
-                    <div>Total Ratings</div>
-                    <div>Actions</div>
-                </div>
-                <div id="items-list">
-                    <!-- Items will be dynamically generated here -->
-                </div>
-            </div>
+    <div id="login-container" class="card">
+      <h1>Admin Login</h1>
+      <form id="login-form" class="grid">
+        <div class="row">
+          <label for="login-email">Email</label>
+          <input id="login-email" type="email" class="input" placeholder="you@example.com" required />
         </div>
+        <div class="row">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" class="input" placeholder="••••••••" required />
+        </div>
+        <div>
+          <button type="submit" class="btn btn-green">Sign In</button>
+        </div>
+      </form>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+    <div id="admin-panel" class="card" style="display:none;">
+      <h1>Dashboard</h1>
 
-            // ======================================================================
-            // ======================================================================
-            // 🔥🔥 PASTE YOUR FIREBASE WEB SDK CONFIG SNIPPET HERE 🔥🔥
-            //
-            // const firebaseConfig = {
-            //   apiKey: "AIza...",
-            //   authDomain: "...",
-            //   databaseURL: "...",
-            //   projectId: "...",
-            //   storageBucket: "...",
-            //   messagingSenderId: "...",
-            //   appId: "..."
-            // };
-            // ======================================================================
-            // ======================================================================
+      <section class="card" style="margin-top:12px;">
+        <h2>Create / Edit Item</h2>
+        <form id="item-form" class="grid">
+          <input type="hidden" id="item-id" />
 
-            // --- STEP 1: Initialize Firebase ---
-            // TODO: Uncomment the lines below after pasting your config.
-            // firebase.initializeApp(firebaseConfig);
-            // const auth = firebase.auth();
-            // const db = firebase.database();
+          <div class="row row-2">
+            <div>
+              <label for="item-type">Type</label>
+              <select id="item-type" class="select">
+                <option value="games">Game</option>
+                <option value="apps">App</option>
+              </select>
+            </div>
+            <div>
+              <label for="item-title">Title</label>
+              <input id="item-title" class="input" placeholder="Title" />
+            </div>
+          </div>
 
-            // DOM Element variables (these are complete)
-            const loginContainer = document.getElementById('login-container');
-            const adminPanel = document.getElementById('admin-panel');
-            const loginForm = document.getElementById('login-form');
-            const logoutBtn = document.getElementById('logout-btn');
-            const itemForm = document.getElementById('item-form');
-            const itemsList = document.getElementById('items-list');
+          <div class="row row-2">
+            <div>
+              <label for="item-logo">Logo URL</label>
+              <input id="item-logo" class="input" placeholder="https://..." />
+            </div>
+            <div>
+              <label for="item-avg">Average Rating (auto)</label>
+              <input id="item-avg" class="input" value="0" disabled />
+            </div>
+          </div>
 
-            // Form elements
-            const itemIdInput = document.getElementById('item-id');
-            const titleInput = document.getElementById('title');
-            const typeInput = document.getElementById('type');
-            const logoUrlInput = document.getElementById('logo-url');
-            const htmlCodeInput = document.getElementById('html-code');
+          <div class="row row-2">
+            <div>
+              <label for="item-total">Total Ratings (auto)</label>
+              <input id="item-total" class="input" value="0" disabled />
+            </div>
+            <div>
+              <label for="item-sum">Sum of Ratings (auto)</label>
+              <input id="item-sum" class="input" value="0" disabled />
+            </div>
+          </div>
 
-            // --- STEP 2: Set up Authentication Listener ---
-            // TODO: Implement the listener to toggle views based on login state.
-            // auth.onAuthStateChanged((user) => {
-            //   if (user) {
-            //      User is signed in. Hide login, show admin panel, call loadItems().
-            //   } else {
-            //      User is signed out. Show login, hide admin panel.
-            //   }
-            // });
+          <div class="row">
+            <label for="item-html">HTML Code (embedded content)</label>
+            <textarea id="item-html" class="textarea" rows="8" placeholder="<!DOCTYPE html>\n<html>...</html>"></textarea>
+          </div>
 
-            // --- STEP 3: Implement Login ---
-            // TODO: Add a submit event listener to the login form.
-            // loginForm.addEventListener('submit', (e) => {
-            //   e.preventDefault();
-            //   const email = get email value;
-            //   const password = get password value;
-            //    Call auth.signInWithEmailAndPassword(email, password)
-            //    and handle any .catch() errors.
-            // });
+          <div style="display:flex; gap:10px;">
+            <button type="submit" class="btn btn-green">Save Item</button>
+            <button type="reset" class="btn">Reset</button>
+          </div>
+        </form>
+      </section>
 
-            // --- STEP 4: Implement Logout ---
-            // TODO: Add a click listener to the logout button.
-            // logoutBtn.addEventListener('click', () => {
-            //    Call auth.signOut();
-            // });
+      <section class="card" style="margin-top:12px;">
+        <h2>Items</h2>
+        <div id="item-list" class="list"></div>
+      </section>
+    </div>
+  </div>
 
-            function loadItems() {
-                // --- STEP 5: Load All Items for Management ---
-                // TODO: Use db.ref('items').on('value', ...) to fetch and display all items in the admin list.
-                // Make sure to create Edit and Delete buttons for each item.
-            }
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      /* ======================================================================
+         ======================================================================
+         🔥🔥 PASTE YOUR FIREBASE WEB SDK CONFIG SNIPPET HERE 🔥🔥
 
-            // --- STEP 6: Implement Form Submission (Create/Update) ---
-            // TODO: Add a submit event listener to the item form.
-            // itemForm.addEventListener('submit', (e) => {
-            //   e.preventDefault();
-            //   const id = get hidden id field;
-            //   const itemData = { collect all form data };
-            //
-            //   if (id) { This is an UPDATE
-            //      db.ref('items/' + id).update(itemData);
-            //   } else { This is a CREATE
-            //      db.ref('items').push(itemData);
-            //   }
-            // });
+         Optionally include Firebase SDK script tags (commented) before using:
+         <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"><\/script>
+         <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"><\/script>
+         <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"><\/script>
 
-            window.editItem = (id) => {
-                // --- STEP 7: Fetch Item to Edit ---
-                // TODO: Use db.ref('items/' + id).once('value', ...) to get data for one item
-                // and populate the form with it.
-            };
+         Then define your config object:
+      */
+      // const firebaseConfig = {
+      //   apiKey: "AIza...",
+      //   authDomain: "...",
+      //   databaseURL: "...",
+      //   projectId: "...",
+      //   storageBucket: "...",
+      //   messagingSenderId: "...",
+      //   appId: "..."
+      // };
+      /* ======================================================================
+         ====================================================================== */
 
-            window.deleteItem = (id) => {
-                if (confirm('Are you sure?')) {
-                    // --- STEP 8: Delete an Item ---
-                    // TODO: Use db.ref('items/' + id).remove() to delete the item.
-                }
-            };
+      // --- STEP 1: Initialize Firebase ---
+      // TODO: Uncomment the lines below after pasting your config.
+      // firebase.initializeApp(firebaseConfig);
+      // const auth = firebase.auth();
+      // const db = firebase.database();
 
-            // Temporary event listeners for demo (remove when Firebase is connected)
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                // Simulate login for demo
-                loginContainer.style.display = 'none';
-                adminPanel.style.display = 'block';
-                loadItems();
-            });
+      // DOM Element variables (these are complete)
+      const loginContainer = document.getElementById('login-container');
+      const adminPanel = document.getElementById('admin-panel');
+      const loginForm = document.getElementById('login-form');
+      const logoutBtn = document.getElementById('logout-btn');
+      const itemForm = document.getElementById('item-form');
+      const itemList = document.getElementById('item-list');
+      const idField = document.getElementById('item-id');
+      const typeField = document.getElementById('item-type');
+      const titleField = document.getElementById('item-title');
+      const logoField = document.getElementById('item-logo');
+      const htmlField = document.getElementById('item-html');
+      const avgField = document.getElementById('item-avg');
+      const totalField = document.getElementById('item-total');
+      const sumField = document.getElementById('item-sum');
 
-            logoutBtn.addEventListener('click', () => {
-                // Simulate logout for demo
-                adminPanel.style.display = 'none';
-                loginContainer.style.display = 'flex';
-            });
+      // --- STEP 2: Set up Authentication Listener ---
+      // TODO: Implement the listener to toggle views based on login state.
+      // auth.onAuthStateChanged((user) => {
+      //   if (user) {
+      //     // User is signed in. Hide login, show admin panel, call loadItems().
+      //     loginContainer.style.display = 'none';
+      //     adminPanel.style.display = '';
+      //     loadItems();
+      //   } else {
+      //     // User is signed out. Show login, hide admin panel.
+      //     adminPanel.style.display = 'none';
+      //     loginContainer.style.display = '';
+      //     itemList.innerHTML = '';
+      //   }
+      // });
 
-            // Demo loadItems function
-            function loadItems() {
-                const demoItems = [
-                    {
-                        id: '1',
-                        title: 'Sample Game',
-                        type: 'games',
-                        avgRating: 4.2,
-                        totalRatings: 15
-                    },
-                    {
-                        id: '2',
-                        title: 'Sample App',
-                        type: 'apps',
-                        avgRating: 3.8,
-                        totalRatings: 8
-                    }
-                ];
+      // --- STEP 3: Implement Login ---
+      // TODO: Add a submit event listener to the login form.
+      // loginForm.addEventListener('submit', (e) => {
+      //   e.preventDefault();
+      //   const email = document.getElementById('login-email').value.trim();
+      //   const password = document.getElementById('login-password').value;
+      //   auth.signInWithEmailAndPassword(email, password)
+      //     .catch((err) => alert(err.message));
+      // });
 
-                itemsList.innerHTML = demoItems.map(item => `
-                    <div class="item-row">
-                        <div class="item-cell">${item.title}</div>
-                        <div class="item-cell">${item.type}</div>
-                        <div class="item-cell">${item.avgRating.toFixed(1)}</div>
-                        <div class="item-cell">${item.totalRatings}</div>
-                        <div class="item-cell">
-                            <button class="action-btn" onclick="editItem('${item.id}')">Edit</button>
-                            <button class="action-btn delete-btn" onclick="deleteItem('${item.id}')">Delete</button>
-                        </div>
-                    </div>
-                `).join('');
-            }
+      // --- STEP 4: Implement Logout ---
+      // TODO: Add a click listener to the logout button.
+      // logoutBtn.addEventListener('click', () => {
+      //   auth.signOut();
+      // });
 
-            // Demo form submission
-            itemForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const formData = {
-                    title: titleInput.value,
-                    type: typeInput.value,
-                    logoUrl: logoUrlInput.value,
-                    htmlCode: htmlCodeInput.value
-                };
-                
-                console.log('Form submitted:', formData);
-                alert('Item saved! (Demo mode)');
-                itemForm.reset();
-                itemIdInput.value = '';
-            });
-        });
-    </script>
+      function loadItems() {
+        // --- STEP 5: Load All Items for Management ---
+        // TODO: Use db.ref('items').on('value', ...) to fetch and display all items in the admin list.
+        // Make sure to create Edit and Delete buttons for each item.
+        // db.ref('items').on('value', (snapshot) => {
+        //   const data = snapshot.val() || {};
+        //   const arr = Object.entries(data).map(([id, item]) => ({ id, ...item }));
+        //   renderItemList(arr);
+        // });
+      }
+
+      function renderItemList(items) {
+        itemList.innerHTML = '';
+        if (!items || items.length === 0) {
+          const div = document.createElement('div');
+          div.className = 'list-item';
+          div.textContent = 'No items found.';
+          itemList.appendChild(div);
+          return;
+        }
+        for (const item of items) {
+          const el = document.createElement('div');
+          el.className = 'list-item';
+          el.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px;">
+              <img src="${item.logoUrl || ''}" alt="${item.title || ''}" style="width:40px;height:40px;border-radius:8px;border:2px solid var(--neon-pink);object-fit:cover;background:#000;" />
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <div style="color:var(--neon-blue)">${item.title || ''}</div>
+                <div style="font-size:12px;opacity:0.85;">${(item.type || '').toUpperCase()} • ⭐ ${(Number(item.avgRating||0)).toFixed(1)} (${item.totalRatings||0})</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:8px;">
+              <button class="btn btn-green" onclick="editItem('${item.id}')">Edit</button>
+              <button class="btn btn-pink" onclick="deleteItem('${item.id}')">Delete</button>
+            </div>
+          `;
+          itemList.appendChild(el);
+        }
+      }
+
+      // --- STEP 6: Implement Form Submission (Create/Update) ---
+      // TODO: Add a submit event listener to the item form.
+      // itemForm.addEventListener('submit', (e) => {
+      //   e.preventDefault();
+      //   const id = idField.value.trim();
+      //   const itemData = {
+      //     type: typeField.value,
+      //     title: titleField.value.trim(),
+      //     logoUrl: logoField.value.trim(),
+      //     htmlCode: htmlField.value,
+      //     avgRating: Number(avgField.value || 0),
+      //     totalRatings: Number(totalField.value || 0),
+      //     sumOfRatings: Number(sumField.value || 0)
+      //   };
+      //
+      //   if (id) { // This is an UPDATE
+      //     db.ref('items/' + id).update(itemData);
+      //   } else { // This is a CREATE
+      //     // Ensure rating fields start at 0 for new items
+      //     itemData.avgRating = 0;
+      //     itemData.totalRatings = 0;
+      //     itemData.sumOfRatings = 0;
+      //     db.ref('items').push(itemData);
+      //   }
+      //
+      //   itemForm.reset();
+      //   idField.value = '';
+      // });
+
+      // Expose helpers on window for button onclick handlers
+      window.editItem = (id) => {
+        // --- STEP 7: Fetch Item to Edit ---
+        // TODO: Use db.ref('items/' + id).once('value', ...) to get data for one item
+        // and populate the form with it.
+        // db.ref('items/' + id).once('value').then((snap) => {
+        //   const it = snap.val();
+        //   if (!it) return;
+        //   idField.value = id;
+        //   typeField.value = it.type || 'apps';
+        //   titleField.value = it.title || '';
+        //   logoField.value = it.logoUrl || '';
+        //   htmlField.value = it.htmlCode || '';
+        //   avgField.value = Number(it.avgRating || 0);
+        //   totalField.value = Number(it.totalRatings || 0);
+        //   sumField.value = Number(it.sumOfRatings || 0);
+        // });
+      };
+
+      window.deleteItem = (id) => {
+        if (!confirm('Are you sure?')) return;
+        // --- STEP 8: Delete an Item ---
+        // TODO: Use db.ref('items/' + id).remove() to delete the item.
+        // db.ref('items/' + id).remove();
+      };
+    });
+  </script>
 </body>
 </html>
